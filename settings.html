@@ -309,10 +309,13 @@
         </main>
     </div>
 
-        <!-- User Dropdown Menu -->
-    <div id="userDropdown" class="glass" style="position: fixed; bottom: 80px; left: 20px; width: 240px; padding: 20px; z-index: 1000; gap: 12px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #000;" id="dropdownAvatar">--</div>
+    <!-- User Dropdown Menu -->
+    <div id="userDropdown" class="glass"
+        style="position: fixed; bottom: 80px; left: 20px; width: 240px; padding: 20px; z-index: 1000; gap: 12px;">
+        <div
+            style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #000;"
+                id="dropdownAvatar">--</div>
             <div>
                 <div id="dropdownName" style="font-weight: 600; font-size: 15px;">User</div>
                 <div id="dropdownEmail" style="font-size: 12px; color: var(--text-dim);">email@example.com</div>
@@ -321,6 +324,12 @@
         <button class="btn-settings-mini" onclick="window.location.href='settings.html'">âš™ï¸ Settings</button>
         <button id="logoutBtn" class="btn-logout">ðŸšª Sign Out</button>
     </div>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
     <script src="auth.js"></script>
     <script>
         let currentUser = null;
@@ -331,19 +340,27 @@
             initUserMenu(currentUser);
 
             document.getElementById("userUidDisplay").textContent = currentUser.uid;
-            document.getElementById("serverUrl").textContent = window.location.origin + "/api/iot/ingest";
+            document.getElementById("serverUrl").textContent = "FIREBASE_AUTO_INGEST";
 
-            // Load profile data
-            try {
-                const res = await apiFetch(`/api/user/${currentUser.uid}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    const profile = data.profile;
+            // Load profile data from Firestore
+            db.collection("users").doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const profile = doc.data();
                     document.getElementById("fullName").value = profile.name || "";
                     document.getElementById("email").value = profile.email || "";
                     document.getElementById("contacts").value = profile.contacts || "";
                 }
-            } catch (err) { console.error(err); }
+            }).catch(err => console.error(err));
+
+            // Load settings
+            db.collection("settings").doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const s = doc.data();
+                    if (document.getElementById("smsNotif")) document.getElementById("smsNotif").checked = s.smsNotif;
+                    if (document.getElementById("emailNotif")) document.getElementById("emailNotif").checked = s.emailNotif;
+                    if (document.getElementById("criticalOnly")) document.getElementById("criticalOnly").checked = s.criticalOnly;
+                }
+            });
         })();
 
         document.getElementById("saveBtn").addEventListener("click", async () => {
@@ -356,19 +373,24 @@
                 const email = document.getElementById("email").value;
                 const contacts = document.getElementById("contacts").value;
 
-                const res = await apiFetch(`/api/user/${currentUser.uid}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ name, email, contacts })
+                // Update Firestore Profile
+                await db.collection("users").doc(currentUser.uid).update({
+                    name, email, contacts
                 });
 
-                if (res.ok) {
-                    alert("Settings updated successfully!");
-                    currentUser.name = name;
-                    currentUser.email = email;
-                    saveSession(getToken(), currentUser);
-                    initUserMenu(currentUser);
-                }
-            } catch (err) { alert("Error saving settings"); }
+                // Update Firestore Settings
+                await db.collection("settings").doc(currentUser.uid).set({
+                    smsNotif: document.getElementById("smsNotif").checked,
+                    emailNotif: document.getElementById("emailNotif").checked,
+                    criticalOnly: document.getElementById("criticalOnly").checked
+                }, { merge: true });
+
+                alert("Settings updated successfully!");
+                currentUser.name = name;
+                currentUser.email = email;
+                saveSession(currentUser.uid, currentUser);
+                initUserMenu(currentUser);
+            } catch (err) { alert("Error saving settings: " + err.message); }
             finally {
                 btn.disabled = false;
                 btn.textContent = "Save Profile";

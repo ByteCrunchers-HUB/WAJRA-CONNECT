@@ -1,4 +1,4 @@
-﻿# WajraConnect 🛡️
+# WajraConnect 🛡️
 
 WajraConnect is an intelligent, autonomous wearable ecosystem designed for women's safety. It provides real-time monitoring, AI-driven threat detection, and emergency automation.
 
@@ -6,17 +6,12 @@ WajraConnect is an intelligent, autonomous wearable ecosystem designed for women
 
 1.  **Install Dependencies**:
     ```bash
-    npm run install:all
+    npm install
     ```
-2.  **Setup Database**:
-    ```bash
-    cd backend
-    npx prisma migrate dev --name init
-    npx prisma generate
-    cd ..
-    ```
-3.  **Configure Environment**:
-    Create a `backend/.env` file with your credentials (JWT_SECRET, TWILIO_SID, etc.).
+2.  **Configure Environment**:
+    Create a `backend/.env` file with your credentials (JWT_SECRET, TWILIO_SID, etc.) and your Firebase project details.
+3.  **Firebase Setup**:
+    Initialize Firebase in the `auth.js` file with your project keys.
 4.  **Run Development Server**:
     ```bash
     npm run dev
@@ -65,8 +60,8 @@ The system uses dual-layer analysis:
 ## 🛠️ Tech Stack
 - **Frontend**: Vanilla JS, Modern CSS (Glassmorphism), Google Fonts (Outfit).
 - **Backend**: Node.js, Express.js.
-- **Database**: SQLite with Prisma ORM.
-- **AI/ML**: Python (Scikit-Learn, OpenCV).
+- **Database**: Firebase (Auth & Firestore).
+- **AI/ML**: Python (Scikit-Learn, OpenCV) & Client-side JS Inference.
 - **Alerting**: Twilio SMS Gateway.
 
 ---

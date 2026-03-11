@@ -194,19 +194,41 @@
             </div>
         </div>
     </div>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script src="auth.js"></script>
     <script>
         window.addEventListener('load', () => {
             const loader = document.querySelector('.loader');
             const container = document.querySelector('.container');
-            setTimeout(() => { loader.style.opacity = '0'; container.classList.add('show'); setTimeout(() => loader.style.display = 'none', 800); }, 1200);
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                container.classList.add('show');
+                setTimeout(() => loader.style.display = 'none', 800);
+            }, 1200);
         });
         const resetForm = document.getElementById('resetForm');
         const resetBtn = document.getElementById('resetBtn');
         const errorMsg = document.getElementById('errorMsg');
         resetForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Password reset is not yet implemented in the Prisma backend. Please contact your administrator.');
-            window.location.href = 'login.html';
+            resetBtn.disabled = true;
+            resetBtn.textContent = "Sending...";
+            const email = document.getElementById('email').value.trim();
+
+            try {
+                await auth.sendPasswordResetEmail(email);
+                alert('Password reset email sent! Check your inbox.');
+                window.location.href = 'index.html';
+            } catch (err) {
+                errorMsg.textContent = err.message || 'Reset failed';
+            } finally {
+                resetBtn.disabled = false;
+                resetBtn.textContent = "Send Reset Email";
+            }
         });
     </script>
 </body>

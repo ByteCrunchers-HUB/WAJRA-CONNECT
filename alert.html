@@ -155,6 +155,12 @@
             style="background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.2); color: var(--danger); padding: 8px; border-radius: 8px; cursor: pointer;">Logout</button>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
     <script src="auth.js"></script>
     <script>
         const alertsState = { alerts: [] };
@@ -164,21 +170,24 @@
             if (!user) return;
             initUserMenu(user);
 
-            await fetchAlerts(user.uid);
-            renderAlerts();
-
-            // Auto-refresh every 10s
-            setInterval(() => fetchAlerts(user.uid).then(renderAlerts), 10000);
+            fetchAlerts(user.uid);
         })();
 
         async function fetchAlerts(uid) {
-            try {
-                const res = await apiFetch(`/api/user/${uid}/alerts`);
-                if (res.ok) {
-                    const data = await res.json();
-                    alertsState.alerts = data.alerts || [];
-                }
-            } catch (e) { console.error('Error fetching alerts:', e); }
+            // Real-time listener for user's alerts
+            db.collection("alerts")
+                .where("userId", "==", uid)
+                .orderBy("timestamp", "desc")
+                .onSnapshot((querySnapshot) => {
+                    const alerts = [];
+                    querySnapshot.forEach((doc) => {
+                        alerts.push({ id: doc.id, ...doc.data() });
+                    });
+                    alertsState.alerts = alerts;
+                    renderAlerts();
+                }, (err) => {
+                    console.error('Error listening for alerts:', err);
+                });
         }
 
         function renderAlerts() {

@@ -158,10 +158,16 @@
                 <!-- Main Feed -->
                 <div class="glass video-container animate-fade-in"
                     style="grid-column: span 2; grid-row: span 2; position: relative;">
-                    <video id="mainVideo" autoplay muted playsinline></video>
+                    <div id="videoSource" style="width: 100%; height: 100%;">
+                        <video id="mainVideo" autoplay muted playsinline
+                            style="width: 100%; height: 100%; object-fit: cover;"></video>
+                        <img id="hardwareFeed" src="/uploads/latest.jpg"
+                            style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                            onerror="this.src='https://via.placeholder.com/640x480?text=Hardware+Camera+Offline'">
+                    </div>
                     <div class="video-overlay">
                         <span class="status-dot"></span>
-                        LIVE - PRIMARY FEED (FRONT CAMERA)
+                        <span id="sourceLabel">LIVE - PRIMARY FEED (FRONT CAMERA)</span>
                     </div>
 
                     <!-- Threat Detector Overlay -->
@@ -176,6 +182,7 @@
                     <div class="video-controls">
                         <button class="control-btn" onclick="toggleMute()">🔇</button>
                         <button class="control-btn" onclick="takeSnapshot()">📸</button>
+                        <button class="control-btn" id="toggleSource" onclick="switchCamera()">🔄 SWITCH CAMERA</button>
                         <button class="control-btn" style="background: var(--danger); color: white;"
                             onclick="triggerPanic()">🆘 EMERGENCY</button>
                         <span id="timestamp" style="margin-left: auto; font-family: monospace;"></span>
@@ -306,6 +313,33 @@
         setupWebcam();
         setInterval(pollThreats, 3000);
         pollThreats();
+
+        let currentSource = 'webcam';
+        function switchCamera() {
+            const webcam = document.getElementById('mainVideo');
+            const hardware = document.getElementById('hardwareFeed');
+            const label = document.getElementById('sourceLabel');
+
+            if (currentSource === 'webcam') {
+                webcam.style.display = 'none';
+                hardware.style.display = 'block';
+                label.textContent = 'LIVE - HARDWARE CAMERA (ESP32-CAM)';
+                currentSource = 'hardware';
+            } else {
+                webcam.style.display = 'block';
+                hardware.style.display = 'none';
+                label.textContent = 'LIVE - PRIMARY FEED (FRONT CAMERA)';
+                currentSource = 'webcam';
+            }
+        }
+
+        // Refresh hardware image every 200ms for "video" effect if available
+        setInterval(() => {
+            const img = document.getElementById('hardwareFeed');
+            if (img && currentSource === 'hardware') {
+                img.src = '/uploads/latest.jpg?t=' + new Date().getTime();
+            }
+        }, 200);
 
         setInterval(() => {
             const now = new Date();

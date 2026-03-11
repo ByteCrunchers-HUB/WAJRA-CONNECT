@@ -30,104 +30,38 @@
    - `PulseSensorPlayground.h`
    - `MPU6050.h`
 3. Copy the **Mark2‑firmware** (`firmware/mark2_firmware.ino`) into the IDE.
-4. Update the **Wi‑Fi credentials** and **backend URL** (default `http://<YOUR_PC_IP>:5000/api/sensor-data`):
+42. Update the **Wi-Fi credentials** and **backend URL** (default `http://<YOUR_PC_IP>:5000/api/iot/location`):
    ```cpp
    const char* ssid     = "YOUR_SSID";
    const char* password = "YOUR_PASSWORD";
-   const char* backendUrl = "http://192.168.1.100:5000/api/sensor-data"; // change to your PC IP
+   const char* backendUrl = "http://192.168.1.100:5000/api/iot/location"; 
    ```
-5. **Camera pins** (for OV2640 on ESP32‑C3):
-   ```
-   #define PWDN_GPIO_NUM    -1
-   #define RESET_GPIO_NUM   -1
-   #define XCLK_GPIO_NUM    21
-   #define SIOD_GPIO_NUM    26
-   #define SIOC_GPIO_NUM    27
-   #define Y9_GPIO_NUM      35
-   #define Y8_GPIO_NUM      34
-   #define Y7_GPIO_NUM      39
-   #define Y6_GPIO_NUM      36
-   #define Y5_GPIO_NUM      19
-   #define Y4_GPIO_NUM      18
-   #define Y3_GPIO_NUM      5
-   #define Y2_GPIO_NUM      4
-   #define VSYNC_GPIO_NUM   25
-   #define HREF_GPIO_NUM    23
-   #define PCLK_GPIO_NUM    22
-   ```
-6. Verify and **upload** the sketch to the ESP32.
-
----
-
-## 2️⃣ Backend Configuration
-
-1. **Start the backend** (if not already running):
-   ```powershell
-   cd d:\DOWNLOADS\WajraConnect-ConnectFINAL-main\WajraConnect-ConnectFINAL-main\backend
-   npm start
-   ```
-2. Ensure the **`.env`** file contains the correct values:
-   ```dotenv
-   PORT=5000
-   TWILIO_ACCOUNT_SID=your_sid   # optional
-   TWILIO_AUTH_TOKEN=your_token # optional
-   TWILIO_FROM_NUMBER=+1234567890
-   EMERGENCY_CONTACTS=+19876543210,+11234567890
-   ```
-3. If you want alerts stored in Firestore, place the **serviceAccountKey.json** (downloaded from Firebase console) in the same `backend/` folder.
+3. Use the provided firmware in the `firmware/` directory:
+   - `esp32_c3_a9g.ino`: Main tracking/SOS firmware.
+   - `esp32_cam.ino`: Video streaming firmware.
 
 ---
 
 ## 3️⃣ Data Flow Overview
 
 ```
-[Mark 2 ESP32] ── Wi‑Fi/GSM ──► http://<backend>/api/sensor-data
-      │                                 │
-      │                                 ▼
-      │                         Express route → `detectEmotion`
-      │                                 │
-      │                                 ▼
-      │                         Python ML (`ml_model.py`)
-      │                                 │
-      │                                 ▼
-      │                         Emotion result stored in memory
-      │                                 │
-      │                                 ▼
-      │                         If Fear/Panic → `triggerAlert`
-      │                                 │
-      │                                 ├─► Firestore (optional)
-      │                                 └─► Twilio SMS (optional)
-      ▼
-   Camera captures image/video (optional) – you can extend the
-   firmware to POST the image to `/api/camera` (endpoint to be added).
+[ESP32-C3 / A9G] ──► http://<backend>/api/iot/location  (GPS & SOS)
+[ESP32-CAM]      ──► http://<backend>/api/camera        (Image uploads)
+       │                                 │
+       │                                 ▼
+       │                         Express route → updates latestData
+       │                                 │
+       ▼                                 ▼
+   GPS Map Updates                Livestream Refresh
 ```
 
 ---
 
-## 4️⃣ Extending the Backend for Camera Data (Optional)
+## 4️⃣ New Endpoints
 
-1. **Add a new route** in `server.js`:
-   ```javascript
-   const multer = require('multer');
-   const upload = multer({ dest: 'uploads/' });
+1. **`/api/camera`**: Receives JPEG images from ESP32-CAM and saves as `uploads/latest.jpg`.
+2. **`/api/iot/location`**: Receives JSON with `lat`, `lng`, `sos`, and `battery`. Requires `x-device-key` header.
 
-   app.post('/api/camera', upload.single('image'), (req, res) => {
-     // `req.file` contains the uploaded image
-     console.log('Received image from device:', req.file.filename);
-     // You could run a vision model here or forward to cloud storage
-     res.json({ status: 'ok' });
-   });
-   ```
-2. Install the required packages:
-   ```powershell
-   npm install multer
-   ```
-3. Update the ESP32 firmware to send the JPEG frame:
-   ```cpp
-   // after capturing a frame with the camera library
-   http.addHeader("Content-Type", "multipart/form-data");
-   int httpResponseCode = http.POST(imageBuffer, imageSize);
-   ```
 
 ---
 

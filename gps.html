@@ -185,6 +185,12 @@
             style="background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.2); color: var(--danger); padding: 8px; border-radius: 8px; cursor: pointer;">Logout</button>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
     <script src="auth.js"></script>
     <script>
         const gpsState = {
@@ -227,25 +233,32 @@
         }
 
         function startGpsFeed() {
-            const loadFromBackend = async () => {
-                try {
-                    const res = await apiFetch("/api/status");
-                    if (res.ok) {
-                        const data = await res.json();
+            // Real-time listener for device status
+            db.collection("system").doc("status")
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
                         if (data.latestData) {
                             const latest = data.latestData;
-                            gpsState.devices[0].lat = Number(latest.lat);
-                            gpsState.devices[0].lng = Number(latest.lng);
-                            gpsState.devices[0].speed = Math.abs(Number(latest.motionY)) * 8;
-                            gpsState.devices[0].moving = gpsState.devices[0].speed >= 1;
+                            // Update Device Alpha with real hardware data
+                            if (latest.lat && latest.lng) {
+                                gpsState.devices[0].lat = Number(latest.lat);
+                                gpsState.devices[0].lng = Number(latest.lng);
+                            }
+
+                            // Estimate speed or use real one if device sends it
+                            gpsState.devices[0].speed = latest.speed || Math.abs(Number(latest.motionY || 0)) * 5;
+                            gpsState.devices[0].moving = gpsState.devices[0].speed >= 0.5;
+                            gpsState.devices[0].battery = latest.battery;
+
+                            // Update Alpha UI labels more specifically if we want
+                            const batteryMsg = latest.battery ? ` (${latest.battery}%)` : "";
+                            $(`alphaStatus`).textContent = (gpsState.devices[0].moving ? "Moving" : "Stationary") + batteryMsg;
+
+                            renderDevices();
                         }
                     }
-                    renderDevices();
-                } catch (err) { console.error(err); }
-            };
-
-            loadFromBackend();
-            setInterval(loadFromBackend, 5000);
+                }, (err) => { console.error("GPS Firestore error:", err); });
         }
     </script>
 </body>
