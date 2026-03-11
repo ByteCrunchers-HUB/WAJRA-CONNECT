@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WajraConnect | Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="modern.css">
+    <style>
+        .settings-container {
+            padding: 40px;
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .settings-card {
+            padding: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: white;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .toggle-item:last-child {
+            border-bottom: none;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--accent-primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 242, 255, 0.3);
+        }
+
+        .device-key {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px dashed var(--accent-primary);
+            color: var(--accent-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-modern {
+                width: 80px;
+                padding: 16px 10px;
+            }
+
+            .nav-text {
+                display: none;
+            }
+
+            .settings-container {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <aside class="sidebar-modern">
+            <div style="padding: 0 16px;">
+                <h2 style="font-size: 20px;" class="gradient-text">WajraConnect</h2>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 8px;">
+                <a href="dashboard.html" class="nav-item">
+                    <img src="home (1).png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="gps.html" class="nav-item">
+                    <img src="map.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">GPS Tracking</span>
+                </a>
+                <a href="livestream.html" class="nav-item">
+                    <img src="video-camera.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Livestream</span>
+                </a>
+                <a href="alert.html" class="nav-item">
+                    <img src="warning.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Alerts</span>
+                </a>
+                <a href="settings.html" class="nav-item active">
+                    <img src="settings.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Settings</span>
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding: 16px;">
+                <div id="userCircle" class="glass"
+                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600;">
+                    --</div>
+            </div>
+        </aside>
+
+        <main class="settings-container">
+            <header style="margin-bottom: 40px;">
+                <h1 class="animate-fade-in">System Settings</h1>
+                <p class="text-dim animate-fade-in" style="animation-delay: 0.1s;">Configure your profile and IoT
+                    connectivity</p>
+            </header>
+
+            <div class="settings-grid">
+                <!-- Profile Settings -->
+                <div class="glass settings-card animate-fade-in" style="animation-delay: 0.2s;">
+                    <h3 style="margin-bottom: 24px;">Profile Information</h3>
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="fullName" placeholder="Enter your name">
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="email@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Emergency Contacts (Comma separated)</label>
+                        <input type="text" id="contacts" placeholder="+1234567890, +0987654321">
+                    </div>
+                    <button class="btn-save" id="saveBtn">Save Profile</button>
+                </div>
+
+                <!-- IoT Device Setup -->
+                <div class="glass settings-card animate-fade-in"
+                    style="animation-delay: 0.3s; border-color: var(--accent-primary);">
+                    <h3 style="margin-bottom: 24px;" class="gradient-text">IoT Device Connectivity</h3>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 20px;">Use these credentials to
+                        connect your WAJRAWEAR hardware device to this account.</p>
+
+                    <div class="input-group">
+                        <label>Server Endpoint</label>
+                        <div class="device-key" style="border-style: solid;">
+                            <span id="serverUrl">https://api.WajraConnect.com/api/iot/ingest</span>
+                            <button class="copy-btn" onclick="copyText('serverUrl')">COPY</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>X-Device-Key</label>
+                        <div class="device-key">
+                            <span id="deviceKey">WajraConnect-device-key-2025</span>
+                            <button class="copy-btn" onclick="copyText('deviceKey')">COPY</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Your User ID (userUid)</label>
+                        <div class="device-key">
+                            <span id="userUidDisplay">loading...</span>
+                            <button class="copy-btn" onclick="copyText('userUidDisplay')">COPY</button>
+                        </div>
+                    </div>
+
+                    <div
+                        style="background: rgba(0,242,255,0.05); padding: 16px; border-radius: 12px; font-size: 12px; margin-top: 20px;">
+                        <strong style="color: var(--accent-primary);">Quick Setup:</strong><br>
+                        1. Flash ESP32 with WajraConnect firmware.<br>
+                        2. Connect to device AP and enter WiFi credentials.<br>
+                        3. Paste the Device Key and User ID above into the device config portal.
+                    </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div class="glass settings-card animate-fade-in" style="animation-delay: 0.4s;">
+                    <h3 style="margin-bottom: 24px;">Alert Preferences</h3>
+                    <div class="toggle-item">
+                        <div>
+                            <strong>SMS Alerts</strong><br>
+                            <small class="text-dim">Send SMS to emergency contacts</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="smsNotif" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <strong>Email Alerts</strong><br>
+                            <small class="text-dim">Send detailed reports via email</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="emailNotif" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <div>
+                            <strong>Critical Only</strong><br>
+                            <small class="text-dim">Only alert during "Panic" states</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="criticalOnly">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+        <!-- User Dropdown Menu -->
+    <div id="userDropdown" class="glass" style="position: fixed; bottom: 80px; left: 20px; width: 240px; padding: 20px; z-index: 1000; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #000;" id="dropdownAvatar">--</div>
+            <div>
+                <div id="dropdownName" style="font-weight: 600; font-size: 15px;">User</div>
+                <div id="dropdownEmail" style="font-size: 12px; color: var(--text-dim);">email@example.com</div>
+            </div>
+        </div>
+        <button class="btn-settings-mini" onclick="window.location.href='settings.html'">âš™ï¸ Settings</button>
+        <button id="logoutBtn" class="btn-logout">ðŸšª Sign Out</button>
+    </div>
+    <script src="auth.js"></script>
+    <script>
+        let currentUser = null;
+
+        (async () => {
+            currentUser = await requireLogin();
+            if (!currentUser) return;
+            initUserMenu(currentUser);
+
+            document.getElementById("userUidDisplay").textContent = currentUser.uid;
+            document.getElementById("serverUrl").textContent = window.location.origin + "/api/iot/ingest";
+
+            // Load profile data
+            try {
+                const res = await apiFetch(`/api/user/${currentUser.uid}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const profile = data.profile;
+                    document.getElementById("fullName").value = profile.name || "";
+                    document.getElementById("email").value = profile.email || "";
+                    document.getElementById("contacts").value = profile.contacts || "";
+                }
+            } catch (err) { console.error(err); }
+        })();
+
+        document.getElementById("saveBtn").addEventListener("click", async () => {
+            const btn = document.getElementById("saveBtn");
+            btn.disabled = true;
+            btn.textContent = "Saving...";
+
+            try {
+                const name = document.getElementById("fullName").value;
+                const email = document.getElementById("email").value;
+                const contacts = document.getElementById("contacts").value;
+
+                const res = await apiFetch(`/api/user/${currentUser.uid}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ name, email, contacts })
+                });
+
+                if (res.ok) {
+                    alert("Settings updated successfully!");
+                    currentUser.name = name;
+                    currentUser.email = email;
+                    saveSession(getToken(), currentUser);
+                    initUserMenu(currentUser);
+                }
+            } catch (err) { alert("Error saving settings"); }
+            finally {
+                btn.disabled = false;
+                btn.textContent = "Save Profile";
+            }
+        });
+
+        function copyText(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text);
+            alert("Copied to clipboard!");
+        }
+    </script>
+</body>
+
+</html>

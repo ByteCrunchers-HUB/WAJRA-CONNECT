@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WajraConnect | Sign In</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #09090B;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .bg-video {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.85));
+            z-index: -1;
+        }
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: opacity .8s ease;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transform: scale(.97);
+            filter: blur(8px);
+            transition: opacity .9s ease, transform .9s ease, filter .9s ease;
+        }
+
+        .container.show {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+            transition-delay: 0.1s;
+        }
+
+        .card {
+            width: 460px;
+            padding: 42px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            text-align: center;
+            position: relative;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(139, 92, 246, 0.25), rgba(14, 165, 233, 0.35));
+            z-index: -1;
+            filter: blur(22px);
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .logo {
+            width: 52px;
+        }
+
+        .title h1 {
+            font-size: 27px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .subtitle {
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #c7c7c7;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            font-size: 15px;
+            margin-bottom: 18px;
+            outline: none;
+            transition: all .2s;
+        }
+
+        input:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 14px;
+            text-align: left;
+            min-height: 18px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+        }
+
+        .links {
+            margin-top: 14px;
+            font-size: 13px;
+        }
+
+        .links a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <video autoplay muted loop class="bg-video">
+        <source src="mv.mp4" type="video/mp4" />
+    </video>
+    <div class="overlay"></div>
+    <div class="loader"><img src="Untitled design (2).gif" alt="Loading..." style="width:40%;" /></div>
+    <div class="container">
+        <div class="card">
+            <div class="title">
+                <img src="WajraConnect (1).png" class="logo" />
+                <h1>WajraConnect</h1>
+            </div>
+            <p class="subtitle">Sign in to access your dashboard.</p>
+            <form id="loginForm">
+                <label>Email</label>
+                <input id="email" type="email" required />
+                <label>Password</label>
+                <input id="password" type="password" required />
+                <div id="errorMsg" class="error-msg"></div>
+                <button type="submit" id="loginBtn">Sign In</button>
+            </form>
+            <div class="links">
+                <a href="signup.html">Create an account</a> | <a href="reset.html">Forgot password?</a>
+            </div>
+        </div>
+    </div>
+    <script src="auth.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            const loader = document.querySelector('.loader');
+            const container = document.querySelector('.container');
+            // If already logged in, go straight to dashboard
+            if (getToken()) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            setTimeout(() => { loader.style.opacity = '0'; container.classList.add('show'); setTimeout(() => loader.style.display = 'none', 800); }, 1200);
+        });
+
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMsg = document.getElementById('errorMsg');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginBtn.disabled = true; loginBtn.textContent = 'Signing in...';
+            errorMsg.textContent = '';
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            try {
+                const res = await apiFetch('/api/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await parseApiJson(res);
+                if (!res.ok) {
+                    errorMsg.textContent = (data && data.error) || 'Login failed';
+                } else {
+                    saveSession(data.token, data.user);
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Cannot reach server. Is the backend running?';
+            } finally {
+                loginBtn.disabled = false; loginBtn.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+
+</html>

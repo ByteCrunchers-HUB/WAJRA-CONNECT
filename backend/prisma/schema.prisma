@@ -1,0 +1,47 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  uid          String   @unique   // Internal user ID (same as id for custom auth)
+  name         String?
+  email        String   @unique
+  passwordHash String?
+  role         String?  @default("User")
+  contacts     String?  // Comma-separated phone numbers
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  settings     Setting?
+  alerts       Alert[]
+}
+
+model Alert {
+  id        String   @id @default(cuid())
+  type      String
+  emotion   String
+  timestamp DateTime @default(now())
+  lat       Float
+  lng       Float
+  data      String   // Using String to store JSON data in SQLite
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Setting {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  emailNotif   Boolean  @default(true)
+  criticalOnly Boolean  @default(false)
+  soundNotif   Boolean  @default(true)
+  autoRefresh  Boolean  @default(true)
+  darkTheme    Boolean  @default(true)
+  interval     Int      @default(5)
+  user         User     @relation(fields: [userId], references: [id])
+}

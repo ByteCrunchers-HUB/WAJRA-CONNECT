@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WajraConnect | Alerts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="modern.css">
+    <style>
+        .alerts-container {
+            padding: 40px;
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .severity-danger {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .severity-warning {
+            color: var(--warning);
+            font-weight: 700;
+        }
+
+        .severity-safe {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-modern {
+                width: 80px;
+                padding: 16px 10px;
+            }
+
+            .nav-text {
+                display: none;
+            }
+
+            .alerts-container {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <aside class="sidebar-modern">
+            <div style="padding: 0 16px;">
+                <h2 style="font-size: 20px;" class="gradient-text">WajraConnect</h2>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 8px;">
+                <a href="dashboard.html" class="nav-item">
+                    <img src="home (1).png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="gps.html" class="nav-item">
+                    <img src="map.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">GPS Tracking</span>
+                </a>
+                <a href="livestream.html" class="nav-item">
+                    <img src="video-camera.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Livestream</span>
+                </a>
+                <a href="alert.html" class="nav-item active">
+                    <img src="warning.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Alerts</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <img src="settings.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Settings</span>
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding: 16px;">
+                <div id="userCircle" class="glass"
+                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600;">
+                    --</div>
+            </div>
+        </aside>
+
+        <main class="alerts-container">
+            <header style="margin-bottom: 40px;">
+                <h1 class="animate-fade-in">System Alerts</h1>
+                <p class="text-dim animate-fade-in" style="animation-delay: 0.1s;">Review activity logs and safety
+                    status</p>
+            </header>
+
+            <div class="metrics-grid">
+                <div class="glass metric-card animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="metric-value" id="totalAlertsCount">0</div>
+                    <div class="metric-label">Total Alerts</div>
+                </div>
+                <div class="glass metric-card animate-fade-in"
+                    style="animation-delay: 0.3s; border-color: rgba(255, 77, 77, 0.3);">
+                    <div class="metric-value severity-danger" id="criticalAlertsCount">0</div>
+                    <div class="metric-label">Critical Risks</div>
+                </div>
+                <div class="glass metric-card animate-fade-in"
+                    style="animation-delay: 0.4s; border-color: rgba(255, 214, 0, 0.3);">
+                    <div class="metric-value severity-warning" id="warningAlertsCount">0</div>
+                    <div class="metric-label">Warning Notifications</div>
+                </div>
+                <div class="glass metric-card animate-fade-in" style="animation-delay: 0.5s;">
+                    <div class="metric-value severity-safe" id="safeAlertsCount">0</div>
+                    <div class="metric-label">Safe Check-ins</div>
+                </div>
+            </div>
+
+            <div class="glass animate-fade-in" style="animation-delay: 0.6s; padding: 24px;">
+                <h3 style="margin-bottom: 20px;">Detailed Activity Log</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>Category</th>
+                                <th>Status Update</th>
+                                <th>Sensor Source</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertTableBody">
+                            <!-- Rows loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- User Menu Dropdown (Same as Settings) -->
+    <div id="userDropdown" class="glass"
+        style="position: fixed; bottom: 80px; left: 20px; width: 220px; padding: 16px; display: none; z-index: 1000; flex-direction: column; gap: 10px;">
+        <div style="margin-bottom: 8px;">
+            <div id="dropdownName" style="font-weight: 600;">User</div>
+            <div id="dropdownEmail" style="font-size: 12px; color: var(--text-dim);">email@example.com</div>
+        </div>
+        <button id="logoutBtn"
+            style="background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.2); color: var(--danger); padding: 8px; border-radius: 8px; cursor: pointer;">Logout</button>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        const alertsState = { alerts: [] };
+
+        (async () => {
+            const user = await requireLogin();
+            if (!user) return;
+            initUserMenu(user);
+
+            await fetchAlerts(user.uid);
+            renderAlerts();
+
+            // Auto-refresh every 10s
+            setInterval(() => fetchAlerts(user.uid).then(renderAlerts), 10000);
+        })();
+
+        async function fetchAlerts(uid) {
+            try {
+                const res = await apiFetch(`/api/user/${uid}/alerts`);
+                if (res.ok) {
+                    const data = await res.json();
+                    alertsState.alerts = data.alerts || [];
+                }
+            } catch (e) { console.error('Error fetching alerts:', e); }
+        }
+
+        function renderAlerts() {
+            const alerts = alertsState.alerts;
+
+            document.getElementById("totalAlertsCount").textContent = alerts.length;
+            document.getElementById("criticalAlertsCount").textContent = alerts.filter(a => a.emotion === 'Panic' || a.emotion === 'Fear').length;
+            document.getElementById("warningAlertsCount").textContent = alerts.filter(a => a.emotion === 'Stressed' || a.emotion === 'Angry').length;
+            document.getElementById("safeAlertsCount").textContent = alerts.filter(a => a.emotion === 'Happy' || a.emotion === 'Neutral' || a.emotion === 'Calm').length;
+
+            const tbody = document.getElementById("alertTableBody");
+            tbody.innerHTML = alerts.map(a => {
+                let severityClass = 'severity-safe';
+                if (['Panic', 'Fear'].includes(a.emotion)) severityClass = 'severity-danger';
+                else if (['Stressed', 'Angry'].includes(a.emotion)) severityClass = 'severity-warning';
+
+                return `
+                    <tr>
+                        <td class="${severityClass}">${a.emotion === 'Panic' ? 'CRITICAL' : a.emotion.toUpperCase()}</td>
+                        <td>${a.type || 'EMOTION SENSE'}</td>
+                        <td>Detected Emotion: ${a.emotion} (Lat: ${a.lat.toFixed(2)}, Lng: ${a.lng.toFixed(2)})</td>
+                        <td>IoT Wearable</td>
+                        <td class="text-dim">${new Date(a.timestamp).toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('') || '<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-dim);">No alerts found</td></tr>';
+        }
+    </script>
+</body>
+
+</html>

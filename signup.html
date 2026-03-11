@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WajraConnect | Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="modern.css">
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #050505;
+        }
+
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.4);
+        }
+
+        .signup-card {
+            width: 480px;
+            padding: 48px;
+            text-align: center;
+        }
+
+        .logo-container {
+            margin-bottom: 32px;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: auto;
+            margin-bottom: 16px;
+        }
+
+        .btn-premium {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+        }
+
+        .footer-links {
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <video autoplay muted loop class="video-bg">
+        <source src="mv.mp4" type="video/mp4">
+    </video>
+
+    <div class="loader" id="loader">
+        <img src="Untitled design (2).gif" style="width: 120px;">
+    </div>
+
+    <div class="glass signup-card animate-fade-in">
+        <div class="logo-container">
+            <img src="pulse.png" class="logo-img" alt="WajraConnect Logo">
+            <h1 class="gradient-text">Create Account</h1>
+            <p class="text-dim">Start your safety journey with us today.</p>
+        </div>
+
+        <form id="signupForm">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="name" placeholder="Priyanshu Sarma" required>
+            </div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="name@example.com" required>
+            </div>
+            <div class="input-group">
+                <label>Create Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+
+            <div id="errorMsg" style="color: var(--danger); font-size: 14px; margin-bottom: 16px; min-height: 20px;">
+            </div>
+
+            <button type="submit" class="btn-primary btn-premium" id="signupBtn">Sign Up</button>
+        </form>
+
+        <div class="footer-links">
+            Already have an account? <a href="index.html" style="color: var(--primary);">Sign In</a>
+        </div>
+        <p style="margin-top: 20px; font-size: 12px; color: var(--text-dim);">🔒 Data privacy is our top priority</p>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            if (getToken()) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 800);
+            }, 1000);
+        });
+
+        const signupForm = document.getElementById('signupForm');
+        const signupBtn = document.getElementById('signupBtn');
+        const errorMsg = document.getElementById('errorMsg');
+
+        signupForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            signupBtn.disabled = true;
+            signupBtn.textContent = "Creating Account...";
+            errorMsg.textContent = "";
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await apiFetch('/api/auth/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await parseApiJson(res);
+                if (!res.ok) {
+                    errorMsg.textContent = (data && data.error) || 'Signup failed';
+                } else {
+                    saveSession(data.token, data.user);
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Connection failed. Is the server running?';
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.textContent = "Sign Up";
+            }
+        });
+    </script>
+</body>
+
+</html>

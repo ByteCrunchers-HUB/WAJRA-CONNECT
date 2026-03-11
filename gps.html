@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WajraConnect | GPS Tracking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="modern.css">
+    <style>
+        .gps-container {
+            padding: 40px;
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+        }
+
+        .gps-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .map-wrapper {
+            height: 600px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .map-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .device-details {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .device-card-premium {
+            padding: 24px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-modern {
+                width: 80px;
+                padding: 16px 10px;
+            }
+
+            .nav-text {
+                display: none;
+            }
+
+            .gps-container {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+
+            .gps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <aside class="sidebar-modern">
+            <div style="padding: 0 16px;">
+                <h2 style="font-size: 20px;" class="gradient-text">WajraConnect</h2>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 8px;">
+                <a href="dashboard.html" class="nav-item">
+                    <img src="home (1).png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="gps.html" class="nav-item active">
+                    <img src="map.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">GPS Tracking</span>
+                </a>
+                <a href="livestream.html" class="nav-item">
+                    <img src="video-camera.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Livestream</span>
+                </a>
+                <a href="alert.html" class="nav-item">
+                    <img src="warning.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Alerts</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <img src="settings.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Settings</span>
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding: 16px;">
+                <div id="userCircle" class="glass"
+                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600;">
+                    --</div>
+            </div>
+        </aside>
+
+        <main class="gps-container">
+            <header style="margin-bottom: 40px;">
+                <h1 class="animate-fade-in">GPS Tracking</h1>
+                <p class="text-dim animate-fade-in" style="animation-delay: 0.1s;">Real-time location monitoring of
+                    connected devices</p>
+            </header>
+
+            <div class="gps-grid">
+                <div class="glass map-wrapper animate-fade-in" style="animation-delay: 0.2s;">
+                    <iframe id="gpsMap" class="map-iframe" src="" loading="lazy"></iframe>
+                    <div style="padding: 12px; font-size: 12px; color: var(--text-dim);" id="mapLastUpdate">Last update:
+                        --</div>
+                </div>
+
+                <div class="device-details animate-fade-in" style="animation-delay: 0.3s;">
+                    <!-- Device Alpha -->
+                    <div class="glass device-card-premium">
+                        <h3 style="margin-bottom: 16px;">Device Alpha</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Latitude</span>
+                                <span id="alphaLat" style="font-weight: 600;">--</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Longitude</span>
+                                <span id="alphaLng" style="font-weight: 600;">--</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Speed</span>
+                                <span id="alphaSpeed" style="font-weight: 600;">-- km/h</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Status</span>
+                                <span id="alphaStatus" style="font-weight: 700;">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Device Beta -->
+                    <div class="glass device-card-premium">
+                        <h3 style="margin-bottom: 16px;">Device Beta</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Latitude</span>
+                                <span id="betaLat" style="font-weight: 600;">--</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Longitude</span>
+                                <span id="betaLng" style="font-weight: 600;">--</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Speed</span>
+                                <span id="betaSpeed" style="font-weight: 600;">-- km/h</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="text-dim">Status</span>
+                                <span id="betaStatus" style="font-weight: 700;">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- User Menu Dropdown -->
+    <div id="userDropdown" class="glass"
+        style="position: fixed; bottom: 80px; left: 20px; width: 220px; padding: 16px; display: none; z-index: 1000; flex-direction: column; gap: 10px;">
+        <div style="margin-bottom: 8px;">
+            <div id="dropdownName" style="font-weight: 600;">User</div>
+            <div id="dropdownEmail" style="font-size: 12px; color: var(--text-dim);">email@example.com</div>
+        </div>
+        <button id="logoutBtn"
+            style="background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.2); color: var(--danger); padding: 8px; border-radius: 8px; cursor: pointer;">Logout</button>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        const gpsState = {
+            lastUpdate: new Date(),
+            devices: [
+                { id: "alpha", name: "Device Alpha", lat: 37.7749, lng: -122.4194, speed: 45, moving: true },
+                { id: "beta", name: "Device Beta", lat: 37.7818, lng: -122.4464, speed: 12, moving: true }
+            ]
+        };
+
+        const $ = (id) => document.getElementById(id);
+
+        (async () => {
+            const user = await requireLogin();
+            if (!user) return;
+            initUserMenu(user);
+            startGpsFeed();
+        })();
+
+        function updateMap(lat, lng) {
+            $("gpsMap").src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+            $("mapLastUpdate").textContent = "Last update: " + new Date().toLocaleTimeString();
+        }
+
+        function renderDevices() {
+            gpsState.devices.forEach(device => {
+                const prefix = device.id;
+                $(`${prefix}Lat`).textContent = device.lat.toFixed(4) + "°";
+                $(`${prefix}Lng`).textContent = device.lng.toFixed(4) + "°";
+                $(`${prefix}Speed`).textContent = device.speed.toFixed(1) + " km/h";
+
+                const statusEl = $(`${prefix}Status`);
+                statusEl.textContent = device.moving ? "Moving" : "Stationary";
+                statusEl.style.color = device.moving ? "var(--success)" : "var(--text-dim)";
+            });
+
+            if (gpsState.devices.length > 0) {
+                updateMap(gpsState.devices[0].lat, gpsState.devices[0].lng);
+            }
+        }
+
+        function startGpsFeed() {
+            const loadFromBackend = async () => {
+                try {
+                    const res = await apiFetch("/api/status");
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.latestData) {
+                            const latest = data.latestData;
+                            gpsState.devices[0].lat = Number(latest.lat);
+                            gpsState.devices[0].lng = Number(latest.lng);
+                            gpsState.devices[0].speed = Math.abs(Number(latest.motionY)) * 8;
+                            gpsState.devices[0].moving = gpsState.devices[0].speed >= 1;
+                        }
+                    }
+                    renderDevices();
+                } catch (err) { console.error(err); }
+            };
+
+            loadFromBackend();
+            setInterval(loadFromBackend, 5000);
+        }
+    </script>
+</body>
+
+</html>

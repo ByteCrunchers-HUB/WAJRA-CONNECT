@@ -1,0 +1,317 @@
+﻿/* Global Design System for WajraConnect */
+:root {
+    --bg-deep: #05070A;
+    --bg-card: rgba(20, 24, 33, 0.7);
+    --bg-sidebar: #0A0D14;
+    --accent-primary: #00F2FF;
+    --accent-secondary: #8A2BE2;
+    --primary: #00F2FF;
+    --secondary: #8A2BE2;
+    --text-main: #FFFFFF;
+    --text-dim: #A0AEC0;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(0, 242, 255, 0.2);
+    --danger: #FF4D4D;
+    --success: #00E676;
+    --warning: #FFD600;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-subtle);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-primary);
+}
+
+/* Glassmorphism Classes */
+.glass {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+}
+
+.glass-hover:hover {
+    border-color: var(--border-glow);
+    box-shadow: 0 8px 32px 0 rgba(0, 242, 255, 0.1);
+    transform: translateY(-2px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Sidebar Styling */
+.sidebar-modern {
+    width: 260px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-subtle);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(0, 242, 255, 0.08);
+    color: var(--accent-primary);
+}
+
+.nav-item.active {
+    box-shadow: inset 0 0 0 1px var(--border-glow);
+}
+
+/* Status Indicators */
+.status-pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-online {
+    background: rgba(0, 230, 118, 0.1);
+    color: var(--success);
+}
+
+.status-offline {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+}
+
+.status-warning {
+    background: rgba(255, 214, 0, 0.1);
+    color: var(--warning);
+}
+
+/* Metric Cards */
+.metric-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.metric-label {
+    font-size: 14px;
+    color: var(--text-dim);
+}
+
+/* Premium Tables */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+td {
+    padding: 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background: rgba(255, 255, 255, 0.01);
+}
+
+/* Utility Classes */
+.text-dim {
+    color: var(--text-dim);
+}
+
+/* Sidebar full-height layout fix */
+.sidebar-modern {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 242, 255, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* User Dropdown */
+#userDropdown {
+    display: none;
+    flex-direction: column;
+}
+
+#userDropdown.show {
+    display: flex !important;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* User Circle Avatar */
+#userCircle {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #000;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid var(--border-glow);
+}
+
+#userCircle:hover {
+    transform: scale(1.08);
+}
+
+/* Logout button style */
+.btn-logout {
+    background: rgba(255, 77, 77, 0.08);
+    border: 1px solid rgba(255, 77, 77, 0.25);
+    color: var(--danger);
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-logout:hover {
+    background: rgba(255, 77, 77, 0.2);
+}
+
+/* Mini settings button */
+.btn-settings-mini {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-settings-mini:hover {
+    background: rgba(255, 255, 255, 0.08);
+}

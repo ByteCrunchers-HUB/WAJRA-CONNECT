@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WajraConnect | Livestream</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="modern.css">
+    <style>
+        .livestream-container {
+            padding: 40px;
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+        }
+
+        .main-feed-wrapper {
+            margin-bottom: 32px;
+            padding: 24px;
+        }
+
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .main-stream {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .feed-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .mini-feed-card {
+            padding: 20px;
+        }
+
+        .mini-video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .offline-overlay {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: #fff;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-modern {
+                width: 80px;
+                padding: 16px 10px;
+            }
+
+            .nav-text {
+                display: none;
+            }
+
+            .livestream-container {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+
+            .feed-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <aside class="sidebar-modern">
+            <div style="padding: 0 16px;">
+                <h2 style="font-size: 20px;" class="gradient-text">WajraConnect</h2>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 8px;">
+                <a href="dashboard.html" class="nav-item">
+                    <img src="home (1).png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="gps.html" class="nav-item">
+                    <img src="map.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">GPS Tracking</span>
+                </a>
+                <a href="livestream.html" class="nav-item active">
+                    <img src="video-camera.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Livestream</span>
+                </a>
+                <a href="alert.html" class="nav-item">
+                    <img src="warning.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Alerts</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <img src="settings.png" style="width: 20px; filter: invert(1);">
+                    <span class="nav-text">Settings</span>
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding: 16px;">
+                <div id="userCircle" class="glass"
+                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600;">
+                    --</div>
+            </div>
+        </aside>
+
+        <main class="livestream-container">
+            <header style="margin-bottom: 40px;">
+                <h1 class="animate-fade-in">Livestream</h1>
+                <p class="text-dim animate-fade-in" style="animation-delay: 0.1s;">Real-time camera surveillance feed
+                </p>
+            </header>
+
+            <div class="glass main-feed-wrapper animate-fade-in" style="animation-delay: 0.2s;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 id="mainFeedTitle">Primary Feed - Main Entrance</h3>
+                    <span id="mainBadge" class="status-badge"
+                        style="background: rgba(255,77,77,0.1); color: var(--danger); border: 1px solid rgba(255,77,77,0.2);">LIVE</span>
+                </div>
+                <div class="video-container">
+                    <video class="main-stream" autoplay muted playsinline id="webcamVideo"></video>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600;" id="mainStreamTitle">Surveillance Active</div>
+                        <div class="text-dim" style="font-size: 12px;" id="mainStreamSubtitle">Building A / Feed 01
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px;" id="mainStreamMeta">Viewers: 12 • 2.4 Mbps</div>
+                        <div class="text-dim" style="font-size: 10px;" id="mainLastUpdate">Last sync: Just now</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="video-grid">
+                <!-- Main Feed -->
+                <div class="glass video-container animate-fade-in"
+                    style="grid-column: span 2; grid-row: span 2; position: relative;">
+                    <video id="mainVideo" autoplay muted playsinline></video>
+                    <div class="video-overlay">
+                        <span class="status-dot"></span>
+                        LIVE - PRIMARY FEED (FRONT CAMERA)
+                    </div>
+
+                    <!-- Threat Detector Overlay -->
+                    <div id="threatOverlay" class="glass"
+                        style="position: absolute; top: 20px; right: 20px; padding: 10px 15px; border-color: var(--warning); display: none; align-items: center; gap: 10px; z-index: 10;">
+                        <span style="color: var(--warning); font-weight: bold; animation: pulse 1s infinite;">⚠️ THREAT
+                            DETECTED</span>
+                        <small id="threatLevel"
+                            style="background: rgba(255,160,0,0.2); padding: 2px 6px; border-radius: 4px;">Medium</small>
+                    </div>
+
+                    <div class="video-controls">
+                        <button class="control-btn" onclick="toggleMute()">🔇</button>
+                        <button class="control-btn" onclick="takeSnapshot()">📸</button>
+                        <button class="control-btn" style="background: var(--danger); color: white;"
+                            onclick="triggerPanic()">🆘 EMERGENCY</button>
+                        <span id="timestamp" style="margin-left: auto; font-family: monospace;"></span>
+                    </div>
+                </div>
+
+                <!-- AI Analysis Side Panel -->
+                <div class="glass animate-fade-in"
+                    style="padding: 24px; animation-delay: 0.1s; display: flex; flex-direction: column; gap: 20px;">
+                    <h3 class="gradient-text">AI Threat Analysis</h3>
+                    <div id="threatDisplay"
+                        style="text-align: center; padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 15px;">
+                        <div id="threatScore" style="font-size: 48px; font-weight: 700;">0%</div>
+                        <p class="text-dim">Real-time threat probability</p>
+
+                        <div
+                            style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; position: relative;">
+                            <div id="threatBar"
+                                style="height: 100%; width: 0%; background: var(--primary); border-radius: 4px; transition: width 0.5s;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="threatLogs"
+                        style="font-size: 13px; display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto;">
+                        <div class="text-dim">Analysis logs will appear here...</div>
+                    </div>
+                </div>
+                <!-- Secondary Feed 1 -->
+                <div class="glass mini-feed-card animate-fade-in" style="animation-delay: 0.3s;">
+                    <div class="mini-video-placeholder">
+                        <div style="font-size: 24px;">📹</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Warehouse Entrance</span>
+                        <span class="text-dim" style="font-size: 12px; color: var(--success);">ONLINE</span>
+                    </div>
+                </div>
+                <!-- Secondary Feed 2 -->
+                <div class="glass mini-feed-card animate-fade-in" style="animation-delay: 0.4s;">
+                    <div class="mini-video-placeholder">
+                        <div style="font-size: 24px;">📹</div>
+                        <div class="offline-overlay">OFFLINE</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Parking Area</span>
+                        <span class="text-dim" style="font-size: 12px;">OFFLINE</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- User Menu Dropdown -->
+    <div id="userDropdown" class="glass"
+        style="position: fixed; bottom: 80px; left: 20px; width: 220px; padding: 16px; display: none; z-index: 1000; flex-direction: column; gap: 10px;">
+        <div style="margin-bottom: 8px;">
+            <div id="dropdownName" style="font-weight: 600;">User</div>
+            <div id="dropdownEmail" style="font-size: 12px; color: var(--text-dim);">email@example.com</div>
+        </div>
+        <button id="logoutBtn"
+            style="background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.2); color: var(--danger); padding: 8px; border-radius: 8px; cursor: pointer;">Logout</button>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        (async () => {
+            const user = await requireLogin();
+            if (!user) return;
+            initUserMenu(user);
+            setupWebcam();
+        })();
+
+        async function setupWebcam() {
+            const video = document.getElementById('mainVideo');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Camera access denied:", err);
+            }
+        }
+
+        function updateThreatUI(score, detected = false) {
+            const scoreEl = document.getElementById("threatScore");
+            const barEl = document.getElementById("threatBar");
+            const overlay = document.getElementById("threatOverlay");
+            const logs = document.getElementById("threatLogs");
+            if (!scoreEl || !barEl) return;
+
+            scoreEl.textContent = Math.round(score * 100) + "%";
+            barEl.style.width = (score * 100) + "%";
+
+            if (score > 0.7 || detected) {
+                barEl.style.background = "var(--danger)";
+                overlay.style.display = "flex";
+                document.getElementById("threatLevel").textContent = score > 0.9 ? "CRITICAL" : "HIGH";
+            } else if (score > 0.4) {
+                barEl.style.background = "var(--warning)";
+                overlay.style.display = "none";
+            } else {
+                barEl.style.background = "var(--primary)";
+                overlay.style.display = "none";
+            }
+
+            if (score > 0.6) {
+                const log = document.createElement("div");
+                log.style.padding = "4px 8px";
+                log.style.background = "rgba(255,100,0,0.1)";
+                log.style.borderRadius = "4px";
+                log.innerHTML = `<span style="color: var(--warning)">[Analysis]</span> High risk patterns detected at ${new Date().toLocaleTimeString()}`;
+                logs.prepend(log);
+            }
+        }
+
+        async function pollThreats() {
+            try {
+                const res = await apiFetch("/api/status");
+                const data = await parseApiJson(res);
+                if (data && data.latestPrediction) {
+                    updateThreatUI(data.latestPrediction.riskScore || 0);
+                }
+            } catch (err) {
+                updateThreatUI(Math.random() * 0.2);
+            }
+        }
+
+        setupWebcam();
+        setInterval(pollThreats, 3000);
+        pollThreats();
+
+        setInterval(() => {
+            const now = new Date();
+            const ts = document.getElementById('timestamp');
+            if (ts) ts.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        }, 1000);
+    </script>
+</body>
+
+</html>
